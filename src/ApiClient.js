@@ -11,7 +11,11 @@ export class ApiClient {
   }
 
   getWeather() {
-    return this.getRequest("https://api.openweathermap.org/data/2.5/onecall?lat=53.382969&lon=-1.4659&exclude=minutely&units=metric&appid=06af2c84a95e6a736fd7bab4b3be279d")
+    return this.getRequest("https://api.openweathermap.org/data/2.5/onecall?lat=53.382969&lon=-1.4659&exclude=minutely&units=metric&appid=a7060406efaa81d1dcedc42aaad91eeb")
+  }
+
+  getPostcode() {
+    return this.getRequest("https://api.postcodes.io/postcodes/S38GW")
   }
 
   getRequest(url) {

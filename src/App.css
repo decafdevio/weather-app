@@ -1,27 +1,54 @@
 html {
-  background-image: url('../public/bluesky.jpg');
+  /* background-image: url('../public/bluesky.jpg'); */
+  background-color: whitesmoke;
 }
 
 .horizontal_hours {
   display: flex;
   justify-content: center;
-  border: 0px solid blue;
+  border: 0px solid;
+  background-color: #1560BF;
+  padding: 1em 0em 1em 0em;
+}
+
+.horizontal_days {
+  display: flex;
+  justify-content: center;
+  border: 0px solid;
+  background-color: whitesmoke;
+  height: 100%;
+  padding: 1em 0em 1em 0em;
 }
 
 .hourly_item {
   padding: 0em 1.5em 0em 1.5em;
-  border: 0px solid;
-  border-radius: 5em;
-  background-color: #D3D3D3;
+  border: 2px solid whitesmoke;
+  border-radius: 10em;
+  background-color: #1560BF;
   text-align: center;
+  max-height: 11em;
+  color: whitesmoke;
 }
 
 .day_item {
   padding: 0em 1.5em 0em 1.5em;
   border: 0px solid;
   border-radius: .5em;
-  background-color: #D3D3D3;
+  background-color: #1560BF;
   text-align: center;
+  color: whitesmoke;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
+  }
+
+  #now_item {
+    padding: 0em 1.5em 0em 1.5em;
+    border: 0px solid;
+    border-radius: .5em;
+    background-color: whitesmoke;
+    text-align: center;
+    color: #1560BF;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
+  
   }
 
 .spacer {
@@ -35,4 +62,15 @@ html {
 .small_italic {
   font-style: italic;
   font-size: .8em;
+}
+
+#postcode-text {
+  padding: .5em;
+  resize: none;
+  font-size: 1.5em;
+  border: 1px solid grey;
+  border-radius: 2em;
+  text-align: center;
+  width: 8em;
+  margin-top: 1.5em;
 }

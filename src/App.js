@@ -3,6 +3,7 @@ import axios from "axios";
 import { ApiClient } from './ApiClient';
 import { TiWeatherWindyCloudy } from 'react-icons/ti';
 import { FiSunrise, FiSunset } from 'react-icons/fi';
+import { BsArrowUpCircleFill, BsArrowUpLeftCircleFill, BsArrowLeftCircleFill, BsArrowDownLeftCircleFill, BsArrowDownCircleFill, BsArrowDownRightCircleFill, BsArrowRightCircleFill, BsArrowUpRightCircleFill } from 'react-icons/bs';
 //import 'bootstrap/dist/css/bootstrap.min.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -13,41 +14,22 @@ import * as moment from 'moment';
 import "./App.css";
 
 function App() {
-  const [weather, cWeather] = useState({
-    loading: "",
-    weather: []
-  });
-
-  const [fetching, cFetching] = useState(false);
+  const [weather, changeWeather] = useState({ loading: "", weather: [], } );
+  const [fetching, weatherFetching] = useState(false);
   const apiClient = new ApiClient();
 
-  useEffect(() => {
-    refreshWeather();
-  }, []);
+  useEffect(() => { refreshWeather(); }, []);
 
-  const updateWeather = (jsonResponse) => {
-    cWeather(
-      jsonResponse
-    )};
+  const updateWeather = (jsonResponse) => { changeWeather( jsonResponse )};
 
   const refreshWeather=()=>{
-    cWeather({
-      loading:"loading.....",
-      weather:[],
-    });
-
-   cFetching(true);
-   apiClient.getWeather()
-   .then((response)=>{
-     updateWeather(response.data)
-     console.log(response.data)
-   })
-
-   .catch((error) => {
-    console.log(error);
-  })
-
-  .finally(cFetching(false));
+   changeWeather({ loading:"loading.....", weather:[], });
+   weatherFetching(true);
+    apiClient.getWeather()
+      .then( (response)=>{ updateWeather(response.data)
+          console.log(response.data) } )
+      .catch( (error) => { console.log(error); } )
+      .finally(weatherFetching(false));
   };
 
   const buildToday = () => {
@@ -55,34 +37,46 @@ function App() {
       return (<></>)
     };
 
-    return weather.daily.slice(0, 1).map((current,index) => {
+    return weather.daily.slice(0, 1).map( (current,index) => {
       const nowFeels_like =  Math.round(current.feels_like.day, 10)
       const nowSunrise = (current.sunrise*1000)
       const nowSunset = (current.sunset*1000)
-      // const tmpImage = (current.weather.slice(0, 1).map( (current,0) ))
       const nowImage = `http://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png`
       const nowAlt = (current.weather[0].description)
-      // const nowTemp = parseFloat(hourly.temp).toFixed(1)
+      const nowTemp = parseFloat(current.temp.day).toFixed(1)
+
+
+      const windDeg = () => {
+        const degree = (current.wind_deg);
+        if (degree>337.5) return <BsArrowUpCircleFill />;
+        if (degree>292.5) return <BsArrowUpLeftCircleFill />;
+        if (degree>247.5) return <BsArrowLeftCircleFill />;
+        if (degree>202.5) return <BsArrowDownLeftCircleFill />;
+        if (degree>157.5) return <BsArrowDownCircleFill />;
+        if (degree>122.5) return <BsArrowDownRightCircleFill />;
+        if (degree>67.5) return <BsArrowRightCircleFill />;
+        if (degree>22.5) return <BsArrowUpRightCircleFill />;
+        return 'unknown';
+      }
 
     return (
-      <>
+      <div id="now_item">
       <Card key={index}>
         <CardGroup>
           <div style={ {textAlign:'center'} }>
-          <img src={nowImage} alt={nowAlt} title={nowImage} style={ {position:'absolute', marginLeft:'-14em', marginTop:'-3em'} } />
-          <h3>NOW</h3>
-          <p>{nowAlt}<br/>
-          <span>TEMP</span><br/>
-          {current.wind_speed} Mph<br/>
-          {current.clouds}%
+          {/* <img src={nowImage} alt={nowAlt} title={nowImage} style={ {position:'absolute', marginLeft:'-14em', marginTop:'-3em'} } /> */}
+          <h2>Currently</h2>
+          <p>
+          <hr/>
+          Temperature: {nowTemp}<br/>
+          Wind: {windDeg()} {current.wind_speed} Mph<br/>
+          Overview: {nowAlt}
           </p>
           </div>
-          <p>just some more information to add<br/>
-          something else to test alignment.</p>
         </CardGroup>
       </Card>
       <div className="spacer"></div>
-      </>
+      </div>
     )
 
     })
@@ -94,17 +88,18 @@ function App() {
     };
 
     return weather.hourly.slice(0, 5).map( (hourly,index) => {
-      const hourImage = `http://openweathermap.org/img/wn/${hourly.weather[0].icon}@2x.png`
+      const hourImage = `http://openweathermap.org/img/wn/${hourly.weather[0].icon}.png`
       const hourAlt = (hourly.weather[0].description)
       const hourlyTemp = parseFloat(hourly.temp).toFixed(1)
 
       return(
       <>
         <div className="hourly_item" key={index}>
-            <h2>{moment(hourly.dt*1000).format('h a')}</h2>
-          <p>{hourAlt}<br/>
+            <h2>{moment(hourly.dt*1000).format('HH:mm')}</h2>
+          <p style={ {marginTop:'-2em'} }>
+            {/* {hourAlt}<br/> */}
           <img src={hourImage} alt={hourAlt} title={hourAlt} /></p>
-            <div style={ {marginTop:'-3em'} }>
+            <div style={ {marginTop:'-2em'} }>
               <h3>{hourlyTemp}°C</h3>
             </div>
 
@@ -124,12 +119,13 @@ function App() {
       return (<></>)
     };
 
-      return weather.daily.slice(1, 8).map((current,index) => {
+      return weather.daily.slice(0, 7).map((current,index) => {
 
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         const day = new Date(parseInt(current.dt) * 1000);
-        const nameDay = days[day.getDay(day)]
+        let nameDay = days[day.getDay(day)]
+        // const index = {index}
         const month = months[day.getMonth(day)]
         const date = day.getDate(day)
         const image = `http://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`
@@ -139,6 +135,23 @@ function App() {
         const sunset = (current.sunset*1000)
         const minTemp = parseFloat(current.temp.min).toFixed(1)
         const maxTemp = parseFloat(current.temp.max).toFixed(1)
+
+        const windDeg = () => {
+          const degree = (current.wind_deg);
+          if (degree>337.5) return <BsArrowUpCircleFill />;
+          if (degree>292.5) return <BsArrowUpLeftCircleFill />;
+          if (degree>247.5) return <BsArrowLeftCircleFill />;
+          if (degree>202.5) return <BsArrowDownLeftCircleFill />;
+          if (degree>157.5) return <BsArrowDownCircleFill />;
+          if (degree>122.5) return <BsArrowDownRightCircleFill />;
+          if (degree>67.5) return <BsArrowRightCircleFill />;
+          if (degree>22.5) return <BsArrowUpRightCircleFill />;
+          return 'unknown';
+      }
+      if(index == "1") {
+        let nameDay = "Today"
+      }
+
 
         return (
         <>
@@ -154,13 +167,14 @@ function App() {
               <span className="small_italic">Feels Like {feels_like}°C</span></p>
 
               <p><FiSunrise /> Sunrise<br/>
-              {moment(sunrise).format('h:mm a')}</p>
+              {moment(sunrise).format('h:mm a') }</p>
               <p><FiSunset /> Sunset<br/>
-              {moment(sunset).format('h:mm a')}</p>
+              {moment(sunset).format('h:mm a') }</p>
 
 
               <p><TiWeatherWindyCloudy /> Wind<br/>
-              {current.wind_speed} Mph</p>
+              {windDeg() } {current.wind_speed} Mph<br/>
+              </p>
 
               {/* <p>humidity={current.humidity}</p> */}
             </CardGroup>
@@ -178,23 +192,28 @@ function App() {
 
   return (
     <>
+
     <Container>
-    <h1>Sheffield</h1>
+    <h1>Sheffield / S3 8GW  <button disabled={fetching} onClick={() => refreshWeather()}>Refresh</button>
+</h1>
     <Row>
     <div className="horizontal_hours">
-      {buildToday()}
+      {/* {buildToday()} */}
+      <div className="geo">
+        <textarea rows="1" id="postcode-text" placeholder="Postal Code"></textarea><br/>
+      </div>
+      <span className="spacer"></span>
+      <span className="spacer"></span>
+      <span className="spacer"></span>
       {buildHour()}
     </div>
     </Row>
-    <br/><br/>
     <Row>
-    <div className="horizontal_hours">
+    <div className="horizontal_days">
       {buildCard()}
     </div>
     </Row>
     </Container>
-    <button disabled={fetching} onClick={() => refreshWeather()}></button>
-
     </>
   );
 }
